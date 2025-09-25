@@ -235,7 +235,9 @@ export const AdmnCansldOrdr = async (req, res) => {
 export const Admindelcnsldordr = async (req, res) => {
     try {
         await coll3.deleteOne({ orderId: req.body.id });
-        fs.unlinkSync(`${path.resolve("TransImages")}/${req.body.image}`);
+        if (req.body.image) {
+            fs.unlinkSync(`${path.resolve("TransImages")}/${req.body.image}`);
+        }
         res.json({ success: true });
     } catch (error) {
         res.json({ success: false })

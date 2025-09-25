@@ -50,7 +50,7 @@ export const OrdersPage = () => {
 
                                                 :
                                                 <div>
-                                                    <button className="del-ordr-btn" onClick={() => { Admindelcnsldordr(v.orderId, v.TransImage); }}>delete Order</button>
+                                                    <button className="del-ordr-btn" onClick={() => Admindelcnsldordr(v.orderId, v.TransImage)}>delete Order</button>
                                                     <p>It's Recommended to delete the order after a day , so that client can notice.</p>
                                                     <p>Reason : {v.reason}</p>
                                                 </div>

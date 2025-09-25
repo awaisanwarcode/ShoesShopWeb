@@ -65,6 +65,7 @@ export const Admindelcnsldordr = (id, image) => {
             if (res.data.success) {
                 window.location.reload();
             } else {
+                console.log(res.data)
                 toast.error("Can't delete it , try again.")
             }
         }).catch((err) => {
