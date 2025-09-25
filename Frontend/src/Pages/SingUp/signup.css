@@ -1,0 +1,99 @@
+#signUpSec {
+    margin-top: 0%;
+    padding: 0px 30px;
+}
+
+.signup-sec-part {
+    margin-top: 100px;
+}
+
+#signUpSec form {
+    width: 560px;
+    padding: 10px;
+}
+
+#signUpSec form h2 {
+    text-decoration: underline;
+    padding-left: 10px;
+    font-size: 2rem;
+    margin-bottom: 30px;
+    text-decoration: underline;
+    color: blue;
+}
+
+.formComp {
+    width: 100%;
+    padding: 5px;
+}
+
+.form-btnDiv {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.termsDiv {
+    display: flex;
+    gap: 5px;
+    margin-top: 8px;
+    justify-content: flex-start;
+    align-items: flex-start;
+}
+
+.formComp input {
+    width: 100%;
+    border: none;
+    font-size: 1.1rem;
+    outline: none;
+    box-shadow: 0px 0px 5px skyblue;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 6px;
+}
+
+#signUpSec form button {
+    outline: none;
+    width: 100%;
+    border: none;
+    background-color: blue;
+    color: whitesmoke;
+    border-radius: 4px;
+    padding: 8px;
+    margin-top: 6px;
+    cursor: pointer;
+    font-size: 1.1rem;
+}
+
+#signUpSec form button:active {
+    outline-offset: 2px;
+    outline: 2px solid blue;
+    background-color: transparent;
+    color: blue;
+    transition: none;
+}
+
+.formComp .checkBox {
+    margin-top: 4px;
+    padding: 0px;
+    margin-bottom: 5px;
+    font-size: 1.2rem;
+    width: auto;
+    cursor: pointer;
+}
+
+.last-div {
+    padding: 10px 10px 10px 2px;
+}
+
+.pageChanger {
+    color: blue;
+    cursor: pointer;
+}
+
+.msgPara {
+    margin-top: 10px;
+    background: white;
+    padding: 5px;
+    box-shadow: 0px 0px 5px blue;
+    border-left: 5px solid blue;
+}

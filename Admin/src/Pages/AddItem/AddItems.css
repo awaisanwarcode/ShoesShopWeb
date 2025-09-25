@@ -1,0 +1,111 @@
+.Ad-Sec {
+    display: grid;
+    grid-template-columns: 0.34fr 1.5fr;
+    align-items: flex-start;
+    min-height: 100vh;
+    background-color: rgba(240, 255, 255, 0.374);
+}
+
+.fst-div {
+    border-right: 2px solid black;
+}
+
+.Ad-Sec-frm {
+    margin: 20px;
+    padding: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+    min-height: 100%;
+}
+
+.formComp {
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+    align-items: flex-start;
+}
+
+.previewImg{
+    width: 120px;
+}
+
+input,
+textarea,
+select {
+    margin-top: 5px;
+    border-radius: 2px;
+    padding: 10px;
+    border: none;
+    width: 96%;
+    outline: none;
+    font-size: 15px;
+    box-shadow: 0px 0px 5px skyblue;
+}
+
+textarea {
+    min-height: 120px;
+}
+
+.slct-spn {
+    width: 100%;
+}
+
+select {
+    cursor: pointer;
+    padding: 8px;
+}
+
+#image {
+    padding: 0px;
+    height: 0px;
+}
+
+.defaultImage {
+    margin: 10px 0px;
+    padding-top: 15px;
+    display: flex;
+    background-color: gainsboro;
+    height: 80px;
+    width: 110px;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    justify-content: center;
+    cursor: pointer;
+}
+
+.uploadSign {
+    padding: 5px 5px 8px 5px;
+    background-color: whitesmoke;
+    border-radius: 50%;
+    display: flex;
+    width: 35px;
+    align-items: center;
+    justify-content: center;
+    height: 35px;
+    font-size: 1.1rem;
+}
+
+.uploadPara {
+    font-size: 12px;
+    font-family: Outfit;
+}
+
+.Addbtn{
+    padding:4px 10px;
+    outline: none;
+    font-size: 16px;
+    width: 80px;
+    cursor: pointer;
+    background: linear-gradient(180deg, transparent 50%, #416fc6 100%);
+    /* border: 1px solid black; */
+    border: none;
+    outline-offset: 2px;
+    outline: 1px solid blue;
+}
+
+.Addbtn:hover{
+    color: blue;
+    background:whitesmoke;
+}
