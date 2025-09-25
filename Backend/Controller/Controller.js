@@ -2,6 +2,7 @@ import { MongoClient } from "mongodb";
 import fs from "fs";
 import path from "path";
 import { GenerateId, loggingIn, registration, VerifyAcc_Token } from "../Functions/function.js";
+import { emailSchema, phoneSchema } from "../Scehmeas/scehmeas.js";
 const client = new MongoClient(process.env.DB_ADD);
 const db = client.db(process.env.DB);
 const coll = db.collection(process.env.COLL);
@@ -129,24 +130,29 @@ export const storeOrderAddSp = async (req, res) => {
 
 export const storeOrderAddPt = async (req, res) => {
     let token = req.body.token;
-    let userAdd = {
-        name: req.body.name,
-        phone: req.body.phone,
-        email: req.body.email,
-        address: req.body.address,
-        city: req.body.city,
-        size: req.body.size,
-        postal: req.body.postal,
-        payment: req.body.payment
-    }
-    let fileName = req.file.filename;
-    let userData = VerifyAcc_Token(token);
-    if (userData && fileName) {
-        await coll3.updateOne({ id: userData.id, userAdd: undefined }, { $set: { userAdd, TransImage: fileName } });
-        await coll.updateOne({ id: userData.id, name: userData.name }, { $set: { cartData: {} } })
-        res.json({ success: true });
+    let phone = phoneSchema.safeParse(req.body.phone).data;
+    let email = emailSchema.safeParse(req.body.email).data;
+    if (phone && email) {
+        let userAdd = {
+            phone,
+            email,
+            address: req.body.address,
+            city: req.body.city,
+            size: req.body.size,
+            postal: req.body.postal,
+            payment: req.body.payment
+        }
+        let fileName = req.file.filename;
+        let userData = VerifyAcc_Token(token);
+        if (userData && fileName) {
+            await coll3.updateOne({ id: userData.id, userAdd: undefined }, { $set: { userAdd, TransImage: fileName } });
+            await coll.updateOne({ id: userData.id, name: userData.name }, { $set: { cartData: {} } })
+            res.json({ success: true });
+        } else {
+            res.json({ success: false, message: "UnAuthorized Attempt LogIn first" });
+        }
     } else {
-        res.json({ success: false, message: "UnAuthorized Attempt LogIn first" });
+        res.json({ success: false, message: "Invaild Email" });
     }
 }
 
