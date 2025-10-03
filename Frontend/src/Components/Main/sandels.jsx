@@ -1,18 +1,19 @@
-import { useEffect, useState } from "react"
-import { AddtoCart, getSandels, getUserCartData, SubFrmCart } from "../../APICalls/Apicalls"
+import { useContext } from "react"
 import { ShoppingCart } from "lucide-react"
 import { baseUrl } from "../../App";
+import { StoreContext } from "../Context/context";
 export const SandelSec = () => {
-    let [data, setData] = useState([]);
-    let [cartData, setCart] = useState([]);
-    useEffect(() => {
-        getSandels(setData);
-    }, []);
-    useEffect(() => {
-        getUserCartData(setCart)
-    }, [data]);
+    let { itemList, cartData, AddToCart, SubFrmCart } = useContext(StoreContext);
+    let data = [];
+    if (itemList) {
+        itemList.filter((v, i) => {
+            if (v.catagory === "Sandels") {
+                data.push(v);
+            }
+        })
+    }
     return (
-        <section className="sec-banner sandels-banner">
+        <section>
             <div className="hAndCardCont">
                 <h2>Women Shoes</h2>
                 <div className="sec-card-cont">
@@ -39,8 +40,8 @@ export const SandelSec = () => {
                                                 ?
                                                 <button>
                                                     <p className="cartIcon itemEsist">
-                                                        <span className="subSpan" onClick={() => { SubFrmCart(v.id, setCart) }}> - </span>
-                                                        <span className="addSpan" onClick={() => { AddtoCart(v.id, setCart) }}> + </span>
+                                                        <span className="subSpan" onClick={() => { SubFrmCart(v.id) }}> - </span>
+                                                        <span className="addSpan" onClick={() => { AddToCart(v.id) }}> + </span>
                                                     </p>
                                                 </button>
                                                 :
@@ -48,9 +49,9 @@ export const SandelSec = () => {
                                                     <button>
                                                         <p className="text">Add to card</p>
                                                         <p className="cartIcon">
-                                                            <span className="subSpan" onClick={() => { SubFrmCart(v.id, setCart) }}> - </span>
+                                                            <span className="subSpan" onClick={() => { SubFrmCart(v.id) }}> - </span>
                                                             <ShoppingCart />
-                                                            <span className="addSpan" onClick={() => { AddtoCart(v.id, setCart) }}> + </span>
+                                                            <span className="addSpan" onClick={() => { AddToCart(v.id) }}> + </span>
                                                         </p>
                                                     </button>
                                                 </>
@@ -70,6 +71,6 @@ export const SandelSec = () => {
                     }
                 </div>
             </div>
-        </section >
+        </section>
     )
 }

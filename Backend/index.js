@@ -8,6 +8,4 @@ app.use(express.json());
 app.use("/Images", express.static("Images"));
 app.use("/TImg", express.static("TransImages"));
 app.use(Routes)
-app.listen(process.env.PORT, () => {
-    console.log(`Allhumdulilah... App is listening on ${process.env.PORT}`);
-})
+app.listen(process.env.PORT, () => {})

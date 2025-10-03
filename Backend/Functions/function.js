@@ -76,3 +76,32 @@ export const VerifyAcc_Token = (token) => {
         return data
     }
 }
+
+export const correctingSeries = async (coll2) => {
+    let items = await coll2.find({}).toArray();
+    for (let i = 0; i < items.length; i++) {
+        await coll2.updateOne({ image: items[i].image }, { $set: { id: i + 1 } })
+    }
+}
+
+export const correctingSeriesOfOColl = async (coll3) => {
+    let items = await coll3.find({}).toArray();
+    for (let i = 0; i < items.length; i++) {
+        await coll3.updateOne({ Date: items[i].Date }, { $set: { orderId: i + 1 } })
+    }
+}
+
+export const encryptingDta = (data) => {
+    let encryptedData = JWT.sign({ data }, process.env.JWT_KEY);
+    return encryptedData;
+}
+
+export const deCryptingData = (token) => {
+    try {
+        let decryptedData = JWT.verify(token, process.env.JWT_KEY);
+        let orderId = decryptedData.data;
+        return orderId;
+    } catch (error) {
+        return undefined;
+    }
+} 

@@ -16,14 +16,13 @@
     text-decoration: underline;
     padding-left: 10px;
     font-size: 2rem;
-    margin-bottom: 30px;
     text-decoration: underline;
     color: blue;
 }
 
 .formComp {
     width: 100%;
-    padding: 5px;
+    padding: 2px;
 }
 
 .form-btnDiv {
@@ -73,7 +72,6 @@
 }
 
 .formComp .checkBox {
-    margin-top: 4px;
     padding: 0px;
     margin-bottom: 5px;
     font-size: 1.2rem;

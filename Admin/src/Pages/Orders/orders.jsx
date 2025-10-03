@@ -62,7 +62,7 @@ export const OrdersPage = () => {
                                         }
                                     </div>
                                     <div className="ordr-elm">
-                                        {v.Items.map((j, i) => {
+                                        {v.cartData.map((j, i) => {
                                             if (j.name && j.quantity) {
                                                 return (
                                                     <p key={i}>{j.name} x {j.quantity}</p>
@@ -71,7 +71,7 @@ export const OrdersPage = () => {
                                         })}
                                     </div>
                                     <div className="ordr-elm odr-qty">
-                                        <p>{v.Items[v["Items"].length - 1]}</p>
+                                        <p>{v.Toatal}</p>
                                     </div>
                                     <div className="ordr-elm">
                                         {(v.TransImage)

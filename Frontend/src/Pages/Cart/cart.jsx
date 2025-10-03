@@ -1,25 +1,28 @@
-import { useEffect, useState } from "react"
+import { useContext } from "react"
 import { Navbar } from "../../Components/Header/navbar"
-import { AddtoCart, DisplayCartData, sendOrderItemsDetail, SubFrmCart } from "../../APICalls/Apicalls"
 import "./cart.css"
 import { baseUrl } from "../../App";
+import { StoreContext } from "../../Components/Context/context";
+import { UpdteCrtAndNavigtToPay } from "../../APICalls/Apicalls";
 export const CartPage = () => {
-    let [items, setItems] = useState(undefined);
-    let [cartData, setCartdata] = useState(undefined);
-    useEffect(() => {
-        DisplayCartData(setItems, setCartdata);
-    }, []);
-    let subTotal = 0;
-    let orderItems = [];
-    const moveToplaceOrder = () => {
-        items.map((v, i) => {
-            if (cartData[String(v.id)]) {
-                v["quantity"] = cartData[String(v.id)];
-                orderItems.push(v);
+    let orderId = JSON.parse(localStorage.getItem("EncOi"));
+    let { itemList, cartData, AddToCart, SubFrmCart } = useContext(StoreContext);
+    let items = [];
+    if (itemList) {
+        itemList.filter((v, i) => {
+            if (cartData[i + 1]) {
+                v["quantity"] = cartData[i + 1];
+                items.push(v)
             }
-        });
-        orderItems.push(subTotal);
-        sendOrderItemsDetail(orderItems)
+        })
+    }
+    let subTotal = 0;
+    const moveToplaceOrder = () => {
+        if (orderId) {
+            UpdteCrtAndNavigtToPay(items, subTotal, orderId);
+        } else {
+            window.location.href = "/"
+        }
     }
     return (
         <>
@@ -50,30 +53,25 @@ export const CartPage = () => {
                                                         <b>{v.name}</b>
                                                     </div>
                                                 </span>
-                                                {(cartData[String(v.id)])
-                                                    ?
-                                                    <div className="rowElem">
-                                                        <b className="title"> Quantity : </b>
-                                                        <p>{cartData[String(v.id)]}</p>
-                                                    </div>
-                                                    :
-                                                    <></>
-                                                }
+                                                <div className="rowElem">
+                                                    <b className="title"> Quantity : </b>
+                                                    <p>{v.quantity}</p>
+                                                </div>
                                                 <div className="rowElem">
                                                     <b className="title"> price/Item : </b>
                                                     <p>{v.price}</p>
                                                 </div>
                                                 <div className="rowElem">
                                                     <b className="title"> Total Price : </b>
-                                                    <p>{cartData[String(v.id)] * v.price}</p>
+                                                    <p>{v.quantity * v.price}</p>
                                                 </div>
-                                                <p hidden>{subTotal = subTotal + (cartData[String(v.id)] * v.price)}</p>
+                                                <p hidden>{subTotal = subTotal + (v.quantity * v.price)}</p>
                                                 <span className="rowElem Actions">
-                                                    {(cartData[String(v.id)] === 0) ? window.location.reload() : <></>}
+                                                    {(v.quantity === 0) ? window.location.reload() : <></>}
                                                     <b className="title">Actions : </b>
                                                     <div>
-                                                        <button className="minus" onClick={() => { SubFrmCart(v.id, setCartdata) }}>-</button>
-                                                        <button className="plus" onClick={() => { AddtoCart(v.id, setCartdata) }}>+</button>
+                                                        <button className="minus" onClick={() => { SubFrmCart(v.id) }}>-</button>
+                                                        <button className="plus" onClick={() => { AddToCart(v.id) }}>+</button>
                                                     </div>
                                                 </span>
                                             </div>

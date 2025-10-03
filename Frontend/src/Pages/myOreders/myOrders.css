@@ -37,7 +37,10 @@ fieldset {
 legend .ordrAcc {
     margin-right: 2px;
     color: rgb(0, 225, 0);
-    text-decoration: 2px solid red underline;
+    padding: 2px 8px;
+    border: 2px solid;
+    border-radius: 20px;
+    background-color: #00ff0026;
 }
 
 .TranscImage {

@@ -4,6 +4,7 @@ import { Navbar } from "../../Components/Header/navbar";
 import "./myOrders.css";
 import { getUserOrders } from "../../APICalls/Apicalls";
 import { baseUrl } from "../../App";
+import { ToastContainer } from "react-toastify";
 export const MyordersPage = () => {
     let [orders, setOrders] = useState([]);
     let [track, setTrack] = useState("No");
@@ -13,6 +14,7 @@ export const MyordersPage = () => {
     return (
         <>
             <header>
+                <ToastContainer />
                 <Navbar />
             </header>
             <main id="myOrdersMain">
@@ -50,8 +52,8 @@ export const MyordersPage = () => {
                                     <div>
                                         <b className="title">Item x Quantity : </b>
                                         {
-                                            (orders[i].Items) ?
-                                                orders[i].Items.map((v, i) => {
+                                            (v.cartData) ?
+                                                v.cartData.map((v, i) => {
                                                     if (v.name) {
                                                         return (
                                                             <p key={i}>{v.name} x {v.quantity}</p>
@@ -64,7 +66,7 @@ export const MyordersPage = () => {
                                     </div>
                                     <div>
                                         <b className="title">Price : </b>
-                                        {v.Items[v["Items"].length - 1]}
+                                        {v.Total}
                                     </div>
                                     {(v.status !== "" && v.status !== "Accepted")
                                         ?

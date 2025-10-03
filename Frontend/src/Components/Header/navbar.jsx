@@ -1,19 +1,22 @@
 import { useNavigate } from "react-router-dom";
-import { token } from "../../APICalls/Apicalls";
+import { navigateToCartPage, token } from "../../APICalls/Apicalls";
 import { LucideShoppingBag } from "lucide-react";
-import { useState } from "react";
+import { useContext, useState } from "react";
+import { StoreContext } from "../Context/context";
+import { toast } from "react-toastify";
 export const Navbar = () => {
+    let { number, cartData } = useContext(StoreContext);
     let [menuBar, setMenubar] = useState(false)
     const navigate = useNavigate()
     return (
         <nav>
-            <div className="nav-left" onClick={() => navigate("/")}><b>ShoesShop</b></div>
+            <div className="nav-left" onClick={() => navigate("/")}><b>WalkWay</b></div>
             <div className="nav-right">
                 <a href="/">Home</a>
                 <a href="/user/orders">My Orders</a>
                 <a href="#">Contact</a>
-                <div className="dot"></div>
-                <a href="/cart"><LucideShoppingBag /></a>
+                <p onClick={() => { (number) ? navigateToCartPage(cartData) : toast.warn("Cart is empthy.") }}><LucideShoppingBag /></p>
+                {(number) ? <div className={(token) ? "dot SignIn" : "dot SignUp"}>{number}</div> : <></>}
                 <button onClick={() => navigate("/signup")}>{(token) ? "Sign in" : "Singn Up"}</button>
             </div>
             <div className="menuBar" onClick={() => setMenubar(!menuBar)}>
@@ -26,7 +29,7 @@ export const Navbar = () => {
                 <hr></hr>
                 <a>Women</a>
                 <hr></hr>
-                <a href="/cart">Cart</a>
+                <a onClick={() => { (number) ? navigateToCartPage(cartData) : toast.warn("Cart is empthy.") }}>Cart</a>
                 <hr></hr>
                 <a href="/user/orders">My Orders</a>
                 <hr></hr>

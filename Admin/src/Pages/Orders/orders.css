@@ -53,7 +53,7 @@
 
 .cnsl-card {
     min-width: 400px;
-    position: absolute;
+    position: fixed;
     top: 10px;
     padding: 35px 10px 10px 10px;
     background-color: whitesmoke;

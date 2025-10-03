@@ -16,20 +16,11 @@ const storeTranscripte = multer.diskStorage({
     }
 });
 let uploadTrans = multer({ storage: storeTranscripte });
-
 Routes.post("/user/auth", fun.UserAuthFun);
-Routes.get("/data/sneakers", fun.getSneakers);
-Routes.get("/data/sandels", fun.getSandels);
-Routes.get("/data/normals", fun.getNormalShoe);
-Routes.post("/user/cart/add", AuthTheUser, fun.AddtoCart)
-Routes.post("/user/cart/sub", AuthTheUser, fun.SubFrmCart)
+Routes.get("/get/All/Items", fun.getAllItems);
 Routes.get("/user/cart", AuthTheUser, fun.getUserCartData)
-Routes.get("/user/cart/display", AuthTheUser, fun.DisplayCartData);
-Routes.post("/user/order/Add/paySimp", AuthTheUser, fun.storeOrderAddSp);
-Routes.post("/user/order/Add/payTrans", uploadTrans.single("image"), fun.storeOrderAddPt);
 Routes.get("/user/orders", AuthTheUser, fun.getUserOrders)
-Routes.post("/user/order/items", AuthTheUser, fun.setorderitemsDetails);
-Routes.get("/user/del/order", AuthTheUser, fun.delUserOrder)
+Routes.post("/user/del/order", fun.delUserOrder)
 
 // Admin Panel Routes;
 // Storage Engine for Shoes Item ("Admin")
@@ -49,7 +40,9 @@ Routes.post("/Ad/del/item", fun.delItemByAdmin);
 Routes.post("/Ad/Cnsl/Order", fun.AdmnCansldOrdr);
 Routes.post("/Ad/del/cnsld/ordr", fun.Admindelcnsldordr);
 Routes.post("/Ad/ordr/acptd", fun.AdmnAcsptdOrdr);
-
 Routes.post("/add/items", uploads.single("image"), fun.addItem);
-
+Routes.post("/nvigte/crt/pge", AuthTheUser, fun.navigateToCartPage);
+Routes.post("/updt/crt/mve/pay", AuthTheUser, fun.UpdteCrtAndNavigtToPay);
+Routes.post("/user/order/Add/payTrans", uploadTrans.single("image"), fun.storeOrderAddPt);
+Routes.post("/user/order/Add/paySimp", AuthTheUser, fun.storeOrderAddSp);
 export default Routes;

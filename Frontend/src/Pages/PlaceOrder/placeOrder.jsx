@@ -3,6 +3,7 @@ import "./placeOrder.css"
 import { cancalTheOrder, storeOrderAdd } from "../../APICalls/Apicalls";
 import { toast, ToastContainer } from "react-toastify";
 export const PlaceorderPage = () => {
+    let orderId = JSON.parse(localStorage.getItem("EncOi"));
     let [paymentPage, setPaymentpage] = useState("Cash on Delivery");
     let [image, setImage] = useState("");
     let [data, setData] = useState({
@@ -28,7 +29,12 @@ export const PlaceorderPage = () => {
             (paymentPage === "Bank Transfer") ? data["image"] = image : data;
             let formData = new FormData;
             formData = data;
-            (image) ? storeOrderAdd(formData, image) : storeOrderAdd(formData);
+            if (orderId) {
+                (image) ? image = image : image = undefined;
+                storeOrderAdd(formData, image, orderId)
+            } else {
+                window.location.href = "/";
+            }
             setImage("");
             setData({
                 name: "",
@@ -129,7 +135,7 @@ export const PlaceorderPage = () => {
                                         <>
                                             <span className="defaultImage">
                                                 <p className="uploadSign">📤</p>
-                                                <p className="uploadPara">Upload Image</p>
+                                                <p className="uploadPara">Upload Receipt</p>
                                             </span>
                                             <input type="file" id="image" onChange={(e) => setImage(e.target.files[0])} />
                                         </>
@@ -148,7 +154,7 @@ export const PlaceorderPage = () => {
                         <div className="ODfooter">
                             <div className="small">Need help? Call +92 300 0000000</div>
                             <div className="button-group">
-                                <div type="reset" className="secondary" onClick={() => cancalTheOrder()} >Go Back</div>
+                                <div type="reset" className="secondary" onClick={() => cancalTheOrder(orderId)} >Go Back</div>
                                 <button type="submit" className="btn">Place Order</button>
                             </div>
                         </div>

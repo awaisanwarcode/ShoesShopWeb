@@ -2,6 +2,7 @@ import "./signup.css";
 import { Navbar } from "../../Components/Header/navbar";
 import { useState } from "react";
 import { sendAuthData } from "../../APICalls/Apicalls";
+import { ToastContainer } from "react-toastify";
 export const SingupPage = () => {
     let [formName, setFormname] = useState("SignUp");
     let [message, setMessage] = useState();
@@ -27,6 +28,7 @@ export const SingupPage = () => {
     return (
         <>
             <header>
+                <ToastContainer/>
                 <Navbar />
             </header>
             <main className="signip-main">

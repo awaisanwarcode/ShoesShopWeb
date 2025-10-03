@@ -41,11 +41,14 @@ nav {
     padding: 0px 4px;
 }
 
-nav a {
+nav a,
+nav p {
     padding: 2px 8px;
+    cursor: pointer;
 }
 
-nav a:hover {
+nav a:hover,
+nav p:hover {
     border-bottom: 4px solid blue;
 }
 
@@ -119,6 +122,29 @@ nav .menuBar {
 
 .hidden {
     top: -500px;
+}
+
+.dot {
+    width: 20px;
+    position: absolute;
+    height: 20px;
+    background-color: red;
+    color: whitesmoke;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    top: 8px;
+    font-size: 12px;
+    font-weight: 600;
+}
+
+.SignUp {
+    right: 160px;
+}
+
+.SignIn{
+    right: 146px;
 }
 
 @media (min-width : 290px) and (max-width : 800px) {

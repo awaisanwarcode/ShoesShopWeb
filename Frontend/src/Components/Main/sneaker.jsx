@@ -1,18 +1,19 @@
 import { ShoppingCart } from "lucide-react";
-import { useEffect, useState } from "react";
-import { AddtoCart, getSneakers, getUserCartData, SubFrmCart } from "../../APICalls/Apicalls";
+import { useContext } from "react";
 import { baseUrl } from "../../App";
+import { StoreContext } from "../Context/context";
 export const SneakerSec = () => {
-    let [data, setData] = useState([]);
-    let [cartData, setCart] = useState([]);
-    useEffect(() => {
-        getSneakers(setData)
-    }, []);
-    useEffect(() => {
-        getUserCartData(setCart)
-    }, [data]);
+    let { itemList, cartData, AddToCart, SubFrmCart } = useContext(StoreContext);
+    let data = [];
+    if (itemList) {
+        itemList.filter((v, i) => {
+            if (v.catagory === "Sneakers") {
+                data.push(v);
+            }
+        })
+    }
     return (
-        <section className="sec-banner sneaker-banner">
+        <section>
             <div className="hAndCardCont">
                 <hr className="horz_line"></hr>
                 <h2>Men Shoes</h2>
@@ -40,8 +41,8 @@ export const SneakerSec = () => {
                                                 ?
                                                 <button>
                                                     <p className="cartIcon itemEsist">
-                                                        <span className="subSpan" onClick={() => { SubFrmCart(v.id, setCart) }}> - </span>
-                                                        <span className="addSpan" onClick={() => { AddtoCart(v.id, setCart) }}> + </span>
+                                                        <span className="subSpan" onClick={() => { SubFrmCart(v.id) }}> - </span>
+                                                        <span className="addSpan" onClick={() => { AddToCart(v.id) }}> + </span>
                                                     </p>
                                                 </button>
                                                 :
@@ -49,9 +50,9 @@ export const SneakerSec = () => {
                                                     <button>
                                                         <p className="text">Add to card</p>
                                                         <p className="cartIcon">
-                                                            <span className="subSpan" onClick={() => { SubFrmCart(v.id, setCart) }}> - </span>
+                                                            <span className="subSpan" onClick={() => { SubFrmCart(v.id) }}> - </span>
                                                             <ShoppingCart />
-                                                            <span className="addSpan" onClick={() => { AddtoCart(v.id, setCart) }}> + </span>
+                                                            <span className="addSpan" onClick={() => { AddToCart(v.id) }}> + </span>
                                                         </p>
                                                     </button>
                                                 </>

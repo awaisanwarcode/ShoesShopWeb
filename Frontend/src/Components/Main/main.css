@@ -63,7 +63,7 @@ section {
 }
 
 .cata-img {
-    max-width: 350px;
+    width: 350px;
     height: 350px;
     box-shadow: 0px 0px 20px rgb(255, 251, 0);
     border-radius: 50%;
@@ -237,7 +237,11 @@ section {
     font-family: Outfit;
 }
 
-/* Media Querrries for Responsivness */
+.hidden {
+    display: none;
+}
+
+/* Spinnig Animation for loader */
 
 @keyframes spining {
     0% {
@@ -249,9 +253,7 @@ section {
     }
 }
 
-.hidden {
-    display: none;
-}
+/* Media Querrries for Responsivness */
 
 @media (max-width:680px) {
     .normals-banner {

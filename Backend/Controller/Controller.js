@@ -1,13 +1,141 @@
 import { MongoClient } from "mongodb";
 import fs from "fs";
 import path from "path";
-import { GenerateId, loggingIn, registration, VerifyAcc_Token } from "../Functions/function.js";
-import { emailSchema, phoneSchema } from "../Scehmeas/scehmeas.js";
+// Here we import all the functions using "* as fun";
+import { correctingSeries, correctingSeriesOfOColl, deCryptingData, encryptingDta, GenerateId, loggingIn, registration, VerifyAcc_Token } from "../Functions/function.js";
+import { emailSchema, phoneSchema, postalCodeSchema } from "../Scehmeas/scehmeas.js";
 const client = new MongoClient(process.env.DB_ADD);
 const db = client.db(process.env.DB);
 const coll = db.collection(process.env.COLL);
 const coll2 = db.collection(process.env.COLL_2);
 const coll3 = db.collection(process.env.COLL_3);
+
+export const UserAuthFun = (req, res) => {
+    if (req.body.name) {
+        registration(req, res, coll);
+    } else {
+        loggingIn(req, res, coll)
+    }
+}
+// Function that help to save user cart data & navigate the user to cart page:
+export const navigateToCartPage = async (req, res) => {
+    let [userExsist] = await coll.find({ id: req.user.id, name: req.user.name }).toArray();
+    if (userExsist) {
+        try {
+            let orderId = await GenerateId(coll3);
+            await coll.updateOne({ id: req.user.id, name: req.user.name }, { $set: { cartData: req.body.cartData } });
+            await coll3.insertOne({ id: req.user.id, name: req.user.name, orderId, cartData: req.body.cartData });
+            let encOrderId = encryptingDta(orderId);
+            res.json({ success: true, EncOi: encOrderId });
+        } catch (error) {
+            res.json({ success: false, message: "Something went wrong , try again" })
+        }
+    } else {
+        res.json({ success: false, message: "Unathorized Attempt , login first" })
+    }
+}
+// Function that help to store the updated cartData in Order Collection & navigate the user to payment form:
+export const UpdteCrtAndNavigtToPay = async (req, res) => {
+    let orderId = deCryptingData(req.body.orderId);
+    if (orderId) {
+        try {
+            await coll3.updateOne({ id: req.user.id, name: req.user.name, userAdd: undefined, orderId: orderId }
+                , { $set: { cartData: req.body.cartData, Total: req.body.Total } });
+            res.json({ success: true })
+        } catch (error) {
+            res.json({ success: false, message: "Something went wrong , try again" })
+        }
+    } else {
+        res.json({ success: false, message: "Invalid Attempt , Go back to home & try again" })
+
+    }
+}
+// Function that help to store userAddress with order data if payment is via "Bank Transfer:";
+export const storeOrderAddPt = async (req, res) => {
+    let token = req.body.token;
+    let phone = phoneSchema.safeParse(req.body.phone).data;
+    let email = emailSchema.safeParse(req.body.email).data;
+    let postal = postalCodeSchema.safeParse(req.body.postal).data;
+    let orderId = deCryptingData(req.body.orderId);
+    if (orderId) {
+        if (phone && email && postal) {
+            let userAdd = {
+                phone,
+                email,
+                address: req.body.address,
+                city: req.body.city,
+                size: req.body.size,
+                postal,
+                payment: req.body.payment
+            }
+            let fileName = req.file.filename;
+            let userData = VerifyAcc_Token(token);
+            if (userData && fileName) {
+                await coll3.updateOne({ id: userData.id, name: userData.name, userAdd: undefined, orderId }
+                    , { $set: { userAdd, TransImage: fileName, status: "", reason: "", Date: Date.now() } });
+                await coll.updateOne({ id: userData.id, name: userData.name }, { $set: { cartData: {} } })
+                res.json({ success: true });
+            } else {
+                res.json({ success: false, message: "UnAuthorized Attempt LogIn first" });
+            }
+        } else {
+            res.json({ success: false, message: "Invaild data filled." });
+        }
+    } else {
+        res.json({ success: false, message: "Invalid Attempt , Go back to home & try again" })
+    }
+}
+// Function that help to store userAddress with order data if payment is other than "Bank Transfer:";
+export const storeOrderAddSp = async (req, res) => {
+    let orderId = deCryptingData(req.body.orderId);
+    if (orderId) {
+        let user = req.user;
+        let userAdd = req.body.data
+        await coll3.updateOne({ id: user.id, name: req.user.name, userAdd: undefined, orderId }
+            , { $set: { userAdd, status: "", reason: "", Date: Date.now() } });
+        await coll.updateOne({ id: user.id, name: user.name }, { $set: { cartData: {} } })
+        res.json({ success: true });
+    } else {
+        res.json({ success: false, message: "Invalid Attempt , Go back to home & try again" })
+    }
+}
+// Function that help get user cart data:
+export const getUserCartData = async (req, res) => {
+    try {
+        let UserId = req.user.id;
+        let name = req.user.name;
+        let [userData] = await coll.find({ id: UserId, name }).toArray();
+        let userCart = userData.cartData;
+        res.json({ success: true, cd: userCart })
+    } catch (error) {
+        res.json({ success: false })
+    }
+}
+// Function that help to get user orders
+export const getUserOrders = async (req, res) => {
+    await coll3.deleteMany({ id: req.user.id, userAdd: undefined });
+    try {
+        let Orders = await coll3.find({ id: req.user.id, name: req.user.name }).toArray();
+        res.json({ success: true, OU: Orders });
+    } catch (error) {
+        res.json({ success: false });
+    }
+}
+// Function that hellp delete the incomplete order after clicking "Go Back" btn in delivery address form. 
+export const delUserOrder = async (req, res) => {
+    let orderId = deCryptingData(req.body.orderId);
+    if (orderId) {
+        try {
+            await coll3.deleteMany({ orderId, userAdd: undefined });
+            res.json({ success: true });
+        } catch (error) {
+            res.json({ success: false });
+        }
+    } else {
+        res.json({ success: false, message: "Invalid Attempt , Go back to home & try again" })
+    }
+}
+//Admin Panel Controller Logic;
 
 export const addItem = async (req, res) => {
     let imageUrl = req.file.filename;
@@ -23,171 +151,6 @@ export const addItem = async (req, res) => {
         res.json({ success: false, message: "Network error." })
     }
 }
-
-export const UserAuthFun = (req, res) => {
-    if (req.body.name) {
-        registration(req, res, coll);
-    } else {
-        loggingIn(req, res, coll)
-    }
-}
-
-export const getSneakers = async (req, res) => {
-    try {
-        let sneakers = await coll2.find({ catagory: "Sneakers" }).toArray();
-        res.json({ success: true, data: sneakers });
-    } catch (error) {
-        res.json({ success: false, message: "Can't load data." })
-    }
-}
-
-export const getSandels = async (req, res) => {
-    try {
-        let sandels = await coll2.find({ catagory: "Sandels" }).toArray();
-        res.json({ success: true, data: sandels });
-    } catch (error) {
-        res.json({ success: false, message: "Can't load data." })
-    }
-}
-
-export const getNormalShoe = async (req, res) => {
-    try {
-        let normals = await coll2.find({ catagory: "Normal" }).toArray();
-        res.json({ success: true, data: normals });
-    } catch (error) {
-        res.json({ success: false, message: "Can't load data." })
-    }
-}
-
-export const AddtoCart = async (req, res) => {
-    let UserId = req.user.id;
-    let name = req.user.name;
-    let [user] = await coll.find({ id: UserId, name }).toArray();
-    if (!user) {
-        res.json({ success: false, message: "Please  register first" });
-    } else {
-        let userCart = user.cartData;
-        if (!userCart[req.body.itemId]) {
-            userCart[req.body.itemId] = 1;
-            await coll.updateOne({ id: UserId, name }, { $set: { cartData: userCart } });
-            res.json({ success: true, cd: userCart });
-        } else {
-            userCart[req.body.itemId] += 1
-            await coll.updateOne({ id: UserId, name }, { $set: { cartData: userCart } });
-            res.json({ success: true, cd: userCart });
-        }
-    }
-}
-
-export const SubFrmCart = async (req, res) => {
-    let UserId = req.user.id;
-    let name = req.user.name;
-    let [user] = await coll.find({ id: UserId, name }).toArray();
-    if (!user) {
-        res.json({ success: false, message: "Please  register first" });
-    } else {
-        let userCart = user.cartData;
-        if (!userCart[req.body.itemId]) {
-            res.json({ success: false, message: "Item deosn't exsist in cart.", cd: userCart });
-        } else {
-            userCart[req.body.itemId] -= 1
-            await coll.updateOne({ id: UserId, name }, { $set: { cartData: userCart } });
-            res.json({ success: true, cd: userCart });
-        }
-    }
-}
-
-export const getUserCartData = async (req, res) => {
-    let UserId = req.user.id;
-    let name = req.user.name;
-    let [userData] = await coll.find({ id: UserId, name }).toArray();
-    let userCart = userData.cartData;
-    res.json({ success: true, cd: userCart })
-}
-
-export const DisplayCartData = async (req, res) => {
-    let UserId = req.user.id;
-    let name = req.user.name;
-    let [userData] = await coll.find({ id: UserId, name }).toArray();
-    let cartData = userData.cartData;
-    let allItem = await coll2.find({}).toArray();
-    let cartItems = [];
-    allItem.map((v, i) => {
-        if (cartData[String(i + 1)]) {
-            cartItems.push(v);
-        }
-    });
-    res.json({ success: true, cd: cartItems, cq: cartData });
-}
-
-export const storeOrderAddSp = async (req, res) => {
-    let user = req.user;
-    let userAdd = req.body.data
-    await coll3.updateOne({ id: user.id, userAdd: undefined }, { $set: { userAdd } });
-    await coll.updateOne({ id: user.id, name: user.name }, { $set: { cartData: {} } })
-    res.json({ success: true });
-}
-
-export const storeOrderAddPt = async (req, res) => {
-    let token = req.body.token;
-    let phone = phoneSchema.safeParse(req.body.phone).data;
-    let email = emailSchema.safeParse(req.body.email).data;
-    if (phone && email) {
-        let userAdd = {
-            phone,
-            email,
-            address: req.body.address,
-            city: req.body.city,
-            size: req.body.size,
-            postal: req.body.postal,
-            payment: req.body.payment
-        }
-        let fileName = req.file.filename;
-        let userData = VerifyAcc_Token(token);
-        if (userData && fileName) {
-            await coll3.updateOne({ id: userData.id, userAdd: undefined }, { $set: { userAdd, TransImage: fileName } });
-            await coll.updateOne({ id: userData.id, name: userData.name }, { $set: { cartData: {} } })
-            res.json({ success: true });
-        } else {
-            res.json({ success: false, message: "UnAuthorized Attempt LogIn first" });
-        }
-    } else {
-        res.json({ success: false, message: "Invaild Email" });
-    }
-}
-
-export const getUserOrders = async (req, res) => {
-    await coll3.deleteMany({ id: req.user.id, userAdd: undefined });
-    try {
-        let Orders = await coll3.find({ id: req.user.id }).toArray();
-        res.json({ success: true, OU: Orders });
-    } catch (error) {
-        res.json({ success: false });
-    }
-}
-
-export const setorderitemsDetails = async (req, res) => {
-    try {
-        let orderId = await GenerateId(coll3)
-        await coll3.insertOne({ Items: req.body.orderItems, id: req.user.id, orderId, Date: Date.now(), status: "", reason: "" });
-        await coll.updateOne({ id: req.user.id, name: req.user.name }, { $set: { cartData: {} } })
-        res.json({ success: true });
-    } catch (error) {
-        res.json({ success: false });
-    }
-}
-
-export const delUserOrder = async (req, res) => {
-    let id = req.user.id;
-    try {
-        await coll3.deleteMany({ id: req.user.id, userAdd: undefined });
-        res.json({ success: true });
-    } catch (error) {
-        res.json({ success: false });
-    }
-}
-
-//Admin Panel Controller Logic;
 
 export const getAllOrders = async (req, res) => {
     await coll3.deleteMany({ userAdd: undefined });
@@ -216,7 +179,7 @@ export const delItemByAdmin = async (req, res) => {
     try {
         await coll2.deleteOne({ id: req.body.id });
         fs.unlinkSync(`${path.resolve("Images")}/${req.body.image}`);
-        correctingSeries();
+        correctingSeries(coll2);
         res.json({ success: true, message: "Item deleted successfully" });
     } catch (error) {
         res.json({ success: false })
@@ -238,16 +201,10 @@ export const Admindelcnsldordr = async (req, res) => {
         if (req.body.image) {
             fs.unlinkSync(`${path.resolve("TransImages")}/${req.body.image}`);
         }
+        correctingSeriesOfOColl(coll3);
         res.json({ success: true });
     } catch (error) {
         res.json({ success: false })
-    }
-}
-
-const correctingSeries = async () => {
-    let items = await coll2.find({}).toArray();
-    for (let i = 0; i < items.length; i++) {
-        await coll2.updateOne({ image: items[i].image }, { $set: { id: i + 1 } })
     }
 }
 

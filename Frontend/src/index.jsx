@@ -6,6 +6,7 @@ import { SingupPage } from './Pages/SingUp/signup.jsx'
 import { CartPage } from './Pages/Cart/cart.jsx'
 import { PlaceorderPage } from './Pages/PlaceOrder/placeOrder.jsx'
 import { MyordersPage } from './Pages/myOreders/myOrders.jsx'
+import ContextProvider from './Components/Context/context.jsx'
 
 const root = createRoot(document.getElementById('root'));
 const allRoutes = createBrowserRouter([{
@@ -36,6 +37,8 @@ const allRoutes = createBrowserRouter([{
 
 root.render(
   <React.StrictMode>
-    <RouterProvider router={allRoutes} />
+    <ContextProvider>
+      <RouterProvider router={allRoutes} />
+    </ContextProvider>
   </React.StrictMode>
 )

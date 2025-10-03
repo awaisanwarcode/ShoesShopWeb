@@ -23,17 +23,13 @@ export const TopCatagories = () => {
                 </div>
                 <div className="cata-card-h-cont">
                     <div className="cata-img">
-                        {/* https://images.pexels.com/photos/16762445/pexels-photo-16762445.jpeg */}
-                        <img src="https://images.pexels.com/photos/6509353/pexels-photo-6509353.jpeg"></img>
+                        <img src="http://localhost:8888/Images/1758516340757.jpg"></img>
                     </div>
                     <div className="cata-heading-cont">
-                        <h3>Kids Shoes</h3>
+                        <h3>Normal Shoes</h3>
                     </div>
                 </div>
             </div>
         </section>
     )
 }
-// }
-// <img src="http://localhost:8888/Images/1758511863918.jpg"></img>
-// <img src="https://images.pexels.com/photos/16762445/pexels-photo-16762445.jpeg"></img>

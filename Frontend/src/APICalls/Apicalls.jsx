@@ -15,67 +15,12 @@ export const sendAuthData = (data, setMessage) => {
         })
 }
 
-export const getSneakers = (setData) => {
-    axios.get(`${baseUrl}/data/sneakers`)
+export const getAllItems = (setItemslist) => {
+    axios.get(`${baseUrl}/get/All/Items`)
         .then((res) => {
-            if (res.data.success) {
-                setData(res.data.data);
-            } else {
-                setData([]);
-            }
-        })
-        .catch((err) => setData([]))
-}
-
-export const getSandels = (setData) => {
-    axios.get(`${baseUrl}/data/sandels`)
-        .then((res) => {
-            if (res.data.success) {
-                setData(res.data.data);
-            } else {
-                setData([]);
-            }
-        })
-        .catch((err) => setData([]))
-}
-
-export const getNormals = (setData) => {
-    axios.get(`${baseUrl}/data/normals`)
-        .then((res) => {
-            if (res.data.success) {
-                setData(res.data.data);
-            } else {
-                setData([]);
-            }
-        })
-        .catch((err) => setData([]))
-}
-
-export const AddtoCart = (itemId, setCart) => {
-    axios.post(`${baseUrl}/user/cart/add`, { itemId, token })
-        .then((res) => {
-            if (res.data.success) {
-                setCart(res.data.cd);
-            } else {
-                toast.error(res.data.message)
-                setCart([])
-            }
+            setItemslist(res.data.Itms)
         }).catch((err) => {
-            toast.error("Something went wrong")
-        })
-}
-
-export const SubFrmCart = (itemId, setCart) => {
-    axios.post(`${baseUrl}/user/cart/sub`, { itemId, token })
-        .then((res) => {
-            if (res.data.success) {
-                setCart(res.data.cd);
-            } else {
-                toast.error(res.data.message)
-                setCart(res.data.cd);
-            }
-        }).catch((err) => {
-            toast.error("Something went wrong")
+            setItemslist(undefined)
         })
 }
 
@@ -88,52 +33,28 @@ export const getUserCartData = (setCart) => {
         if (res.data.success) {
             setCart(res.data.cd)
         } else {
-            setCart([])
+            setCart({})
         }
     }).catch((err) => {
-        setCart(undefined)
+        setCart({})
     })
 }
 
-export const DisplayCartData = (setItem, setCartdata) => {
-    axios.get(`${baseUrl}/user/cart/display`, {
-        headers: {
-            "token": token
-        }
-    })
-        .then((res) => {
-            setItem(res.data.cd);
-            setCartdata(res.data.cq)
-        }).catch((err) => {
-            setItem(undefined);
-            setCartdata(undefined)
-        })
-}
-
-export const sendOrderItemsDetail = (orderItems) => {
-    axios.post(`${baseUrl}/user/order/items`, { orderItems, token })
-        .then((res) => {
-            if (res.data.success) {
-                window.location.href = "/order/address";
-            } else {
-                toast.error("Error Occured.")
-            }
-        }).catch((err) => {
-            toast.error("Error Occured.")
-        })
-}
-
-export const storeOrderAdd = (data, image) => {
+export const storeOrderAdd = (data, image, orderId) => {
     if (image && data.payment === "Bank Transfer") {
         data["image"] = image;
         data["token"] = token
+        data["orderId"] = orderId
         axios.post(`${baseUrl}/user/order/Add/payTrans`, data, {
             headers: {
                 "Content-Type": "multipart/form-data"
             }
         }).then((res) => {
             if (res.data.success) {
+                localStorage.removeItem("EncOi");
                 window.location.href = ("/user/orders")
+            } else {
+                toast.error(res.data.message);
             }
         }).catch((err) => {
             toast.error("Something went wrong")
@@ -141,10 +62,13 @@ export const storeOrderAdd = (data, image) => {
     } else if (image && data.payment !== "Bank Transfer" || !image && data.payment === "Bank Transfer") {
         toast.warning("Invalid Payment method used.")
     } else {
-        axios.post(`${baseUrl}/user/order/Add/paySimp`, { data, token })
+        axios.post(`${baseUrl}/user/order/Add/paySimp`, { data, token, orderId })
             .then((res) => {
                 if (res.data.success) {
+                    localStorage.removeItem("EncOi");
                     window.location.href = ("/user/orders")
+                } else {
+                    toast.error(res.data.message);
                 }
             }).catch((err) => {
                 toast.error("Something went wrong")
@@ -168,16 +92,44 @@ export const getUserOrders = (setOrders) => {
     })
 }
 
-export const cancalTheOrder = () => {
-    axios.get(`${baseUrl}/user/del/order`, {
-        headers: {
-            "token": token
-        }
-    }).then((res) => {
-        if (res.data.success) {
+export const cancalTheOrder = (orderId) => {
+    axios.post(`${baseUrl}/user/del/order`, { orderId })
+        .then((res) => {
+            if (res.data.success) {
+                localStorage.removeItem("EncOi");
+                window.location.href = ("/");
+            } else {
+                toast.error(res.data.message);
+            }
+        }).catch((err) => {
+            localStorage.removeItem("EncOi");
             window.location.href = ("/");
-        }
-    }).catch((err) => {
-        toast.error("Can't Go back , try again")
-    })
+        })
+}
+
+export const navigateToCartPage = (cartData) => {
+    axios.post(`${baseUrl}/nvigte/crt/pge`, { cartData, token })
+        .then((res) => {
+            if (res.data.success) {
+                localStorage.setItem("EncOi", JSON.stringify(res.data.EncOi))
+                window.location.href = "/cart";
+            } else {
+                toast.error(res.data.message)
+            }
+        }).catch((err) => {
+            toast.error("error occured , try again")
+        })
+}
+
+export const UpdteCrtAndNavigtToPay = (updatedCartData, Total, orderId) => {
+    axios.post(`${baseUrl}/updt/crt/mve/pay`, { cartData: updatedCartData, Total, token, orderId })
+        .then((res) => {
+            if (res.data.success) {
+                window.location.href = "/order/address";
+            } else {
+                toast.error(res.data.message)
+            }
+        }).catch((err) => {
+            toast.error("error occured , try again")
+        })
 }
